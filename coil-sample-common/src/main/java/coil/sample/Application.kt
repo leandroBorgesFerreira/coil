@@ -4,6 +4,7 @@ package coil.sample
 
 import android.app.Application
 import android.os.Build.VERSION.SDK_INT
+import android.os.StrictMode
 import android.util.Log
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -19,6 +20,30 @@ import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 
 class Application : Application(), ImageLoaderFactory {
+
+    override fun onCreate() {
+        super.onCreate()
+        strictMode()
+    }
+
+    private fun strictMode() {
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads()
+                .detectDiskWrites()
+                .detectNetwork() // or .detectAll() for all detectable problems
+                .penaltyLog()
+                .build()
+        )
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .penaltyLog()
+                .penaltyDeath()
+                .build()
+        )
+    }
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
